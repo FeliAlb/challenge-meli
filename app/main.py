@@ -18,7 +18,7 @@ def read_input_text(path: str | None) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="MELI DataSec Challenge - Day 1 skeleton")
+    parser = argparse.ArgumentParser(description="MELI DataSec Challenge")
     parser.add_argument("--input", help="Path a un archivo de texto para usar como input", default=None)
     args = parser.parse_args()
 
