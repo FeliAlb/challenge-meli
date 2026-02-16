@@ -22,8 +22,6 @@ def _risk_level_from_score(score: int) -> str:
 
 
 def _score_from_category(category: str, telemetry: Dict[str, bool]) -> Dict[str, Any]:
-    # Base por categoría (criterio de negocio/amenaza)
-    # Ajustado para que haya priorización.
     base = {
         "RANSOMWARE":      (5, 5),  
         "ATO":             (5, 5),  
@@ -91,9 +89,6 @@ def _score_from_category(category: str, telemetry: Dict[str, bool]) -> Dict[str,
 
 
 def run(session_id: str, analyzer_out: Dict[str, Any]) -> Dict[str, Any]:    
-    # Soporta ambos formatos:
-    # - analyzer_out crudo: {"detectors": [...]}
-    # - analyzer_out envelope: {"payload": {"detectors": [...]}}
     detectors = analyzer_out.get("detectors")
     if detectors is None:
         detectors = (analyzer_out.get("payload") or {}).get("detectors", [])
@@ -108,7 +103,6 @@ def run(session_id: str, analyzer_out: Dict[str, Any]) -> Dict[str, Any]:
 
         scoring = _score_from_category(category, telemetry)
 
-        # MITRE lookup vía MCP (con fallback)
         mitre: List[Dict[str, str]] = []
         for tid in MITRE_ID_MAP.get(category, []):
             info = get_technique_by_id(tid)

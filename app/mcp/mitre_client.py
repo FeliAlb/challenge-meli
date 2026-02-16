@@ -11,7 +11,6 @@ from mcp.client.streamable_http import streamable_http_client
 
 logger = logging.getLogger(__name__)
 
-# Configurable por entorno (más pro que hardcodear)
 MCP_URL = os.getenv("MCP_URL", "http://localhost:8000/mcp")
 
 
@@ -30,14 +29,11 @@ def get_technique_by_id(technique_id: str) -> Optional[Dict[str, Any]]:
     try:
         result = asyncio.run(_call_tool_async("get_technique_by_id", {"technique_id": technique_id}))
     except Exception as e:
-        # No rompemos el pipeline: devolvemos None y el Classifier usa fallback.
-        # Log a nivel DEBUG para no ensuciar salida normal.
         logger.debug("MCP call_tool failed for %s (%s): %r", technique_id, MCP_URL, e)
         return None
 
     content = getattr(result, "content", None)
 
-    # El server devuelve: [TextContent(type='text', text='{...json...}')]
     if isinstance(content, list) and content:
         first = content[0]
         text = getattr(first, "text", None)
@@ -46,7 +42,6 @@ def get_technique_by_id(technique_id: str) -> Optional[Dict[str, Any]]:
             try:
                 obj = json.loads(text)
 
-                # Formato observado: {"technique": {...}}
                 if isinstance(obj, dict):
                     technique = obj.get("technique")
                     if isinstance(technique, dict):
@@ -57,7 +52,6 @@ def get_technique_by_id(technique_id: str) -> Optional[Dict[str, Any]]:
                 logger.debug("MCP returned non-JSON text for %s: %r", technique_id, text[:200])
                 return None
 
-        # Fallback si en algún caso viene dict directo
         if isinstance(first, dict):
             return first
 

@@ -23,7 +23,6 @@ def get_technique_by_id(technique_id: str) -> Optional[Dict[str, Any]]:
         print(f"[MCP] error get_technique_by_id({technique_id}): {e!r}")
         return None
 
-    # Normalización típica del SDK (puede venir en result.content)
     content = getattr(result, "content", None)
 
     if isinstance(content, list) and content and isinstance(content[0], dict):
